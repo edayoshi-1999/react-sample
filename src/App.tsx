@@ -3,11 +3,56 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useState } from "react";
 
-function App() {
-	const [squares, setSquares] = useState<(string | null)[]>(
-		Array(9).fill(null),
-	);
-	const [xIsNext, setXisNext] = useState(true);
+function Game(){
+  // useStateを使って、状態を管理する。
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0; 
+  const currentSquares = history[currentMove];
+
+  // 現在の手を進める関数(マス目をクリックしたときに動く。)
+  function handlePlay(nextSquares : (string | null)[]) {
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
+  }
+
+  // 現在の手をその番号まで戻す関数
+  function jumpTo(nextMove: number){
+    setCurrentMove(nextMove);
+  }
+
+  //履歴を表示するための配列を作成
+  const moves = history.map((squares, move) => {
+    let description;
+    if(move > 0){
+      description = "Go to move #" + move;
+    } else {
+      description = "Go to game start";
+    }
+
+    return (
+      <li key = {move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    );
+  });
+
+  return(
+    <div className="game">
+    <div className="game-board">
+      <App xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+    </div>
+    <div className="game-info">
+      <ol>{moves}</ol>
+    </div>
+  </div>
+  );
+}
+
+export default Game;
+
+function App({xIsNext, squares, onPlay}: { xIsNext: boolean; squares: (string | null)[]; onPlay: (nextSquares: (string | null)[]) => void }) {
 
 	function handleClick(i: number) {
 		// 一度クリックされたマスは無視する。何か入っていればtrueになる。
@@ -25,8 +70,8 @@ function App() {
 			nextSquares[i] = "o";
 		}
 
-		setSquares(nextSquares);
-		setXisNext(!xIsNext);
+    onPlay(nextSquares);
+
 	}
 
 	// 勝者を判定する関数を呼び出す。
@@ -61,8 +106,6 @@ function App() {
 		</>
 	);
 }
-
-export default App;
 
 function Square({
   //引数
