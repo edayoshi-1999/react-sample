@@ -24,18 +24,21 @@ function Game(){
 
   //履歴を表示するための配列を作成
   const moves = history.map((squares, move) => {
-    let description;
-    if(move > 0){
-      description = "Go to move #" + move;
-    } else {
-      description = "Go to game start";
-    }
+	let description: string;
+	if(move > 0){
+	  description = `Go to move #${move}`;
+	} else {
+	  description = "Go to game start";
+	}
 
-    return (
-      <li key = {move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
-      </li>
-    );
+  // ユニークなキーを生成
+    const key = `history-${move}`;
+  
+	return (
+	  <li key={key}>
+		<button type="button" onClick={() => jumpTo(move)}>{description}</button>
+	  </li>
+	);
   });
 
   return(
@@ -78,11 +81,11 @@ function App({xIsNext, squares, onPlay}: { xIsNext: boolean; squares: (string | 
 	// 勝者が決まっていればその記号を返す。
 	// 勝者が決まっていなければnullを返す。
 	const winner = calculateWinner(squares);
-	let status;
+	let status: string;
 	if (winner) {
-		status = "Winner: " + winner;
+		status = `Winner: ${winner}`;
 	} else {
-		status = "Next player: " + (xIsNext ? "x" : "o");
+		status = `Next player: ${xIsNext ? "x" : "o"}`;
 	}
 
 	return (
@@ -113,7 +116,7 @@ function Square({
 	onSquareClick,
 }: { value: string | null; onSquareClick: () => void }) { //引数の型（propsの型）
 	return (
-		<button className="square" onClick={onSquareClick}>
+		<button type="button" className="square" onClick={onSquareClick}>
 			{value}
 		</button>
 	);
